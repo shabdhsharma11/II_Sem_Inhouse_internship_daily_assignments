@@ -1,42 +1,59 @@
-
 <?php
+session_start();
 include("db_connect.php");
-$error="";
 
+$error = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    
-    $email = mysqli_real_escape_string($conn, $_POST['email']); 
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
-    
-    if ( $email == "" || $password =="" ){
 
-     $error = "All fields are required.";
-        echo $error;
-    }
-     else {
-        $selectQuery = "Select * from user where email='$email' and password='$password'";
-        $result= mysqli_query($conn,$selectQuery);
+    if ($email == "" || $password == "") {
+        $error = "Please fill in all fields.";
+    } else {
+        
+        $query = "SELECT * FROM user WHERE email='$email' AND password='$password'";
+        $result = mysqli_query($conn, $query);
 
-
-        if ($result && mysqli_num_rows($result) == 1) {
+        if (mysqli_num_rows($result) == 1) {
             
-            $user = mysqli_fetch_assoc($result);
-
+            $_SESSION['user_email'] = $email;
+            
            
-            session_start();
-
-            $_SESSION['user_id']    = $user['id'];
-            $_SESSION['user_name']  = $user['name']; // This completely fixes the warning!
-            $_SESSION['user_email'] = $user['email'];
-
             header("Location: dashboard.php");
             exit();
         } else {
-            echo "Invalid Credentials";
+           
+            $error = "Invalid Email or Password.";
         }
     }
-        
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <?php include("header.php"); ?>
+
+    <div class="container mt-5" style="max-width: 400px;">
+        <h2 class="text-center mb-4">Login</h2>
+
+        <?php if($error != ""): ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php endif; ?>
+
+        <!-- Make sure action is empty or points to login.php, and names match POST variables -->
+        <form action="login.php" method="POST">
+            <input type="email" name="email" class="form-control mb-3" placeholder="Email" required>
+            <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+</body>
+</html>

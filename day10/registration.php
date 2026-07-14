@@ -1,38 +1,25 @@
 <?php
-include("db_connect.php");
-$error="";
+include("header.php");
+
+?>
+  <div class="container mt-5" style="max-width:400px;">
+        
+     <form action="checkRegistration.php" method="post">
+            <h3 class="mb-3">Register</h3>
+
+            <input type="text" name="name" class="form-control mb-3" placeholder="Name"  >
+            <input type="email" name="email" class="form-control mb-3" placeholder="Email"  >
+            <small class ="text  muted d-block mb-2" style="font size:0.85rem; text-align: left;">
+                *Password must be at least 5 characters long and contain at least one number
+                and one special character (e.g,@,#,$,%).</small>
+            <input type="password" name="password" class="form-control mb-3" placeholder="Password" >
+            <input type="password" name="confirm_password" class="form-control mb-3" placeholder="Confirm Password"  >
+           
+            <button class = "btn btn-primary w-100">Register</button>
+     </form>
+  </div>
 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
-    
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']); 
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirm_password']);
-   
-    if ($name == "" || $email == "" || $password ==""|| $confirm_password==""){
-
-     $error = "All fields are required.";
-        echo $error;
-    }else if (strlen($password)<5|| !preg_match('/[0-9]/',$password)||!preg_match('/[^A-Z a-z 0-9]/',$password))
-    {
-       $error = "<div class='alert alert-danger mt-2'> Password must be at least 5 characters long, contain at least one number, and one special character.</div>";
-       echo $error;
-    }
-    else if ($password !== $confirm_password){
-        $error="Passwords do not match.";
-        echo $error;
-    }
-     else {
-        $insertQuery = "insert into user (name,email,password) values('$name','$email','$password')";
-        $result= mysqli_query($conn,$insertQuery);
-        if($result){
-            header("Location:success.php");
-            exit();
-        } else{
-            echo"Error occured while register" . mysqli_error($conn);
-        }
-       
-    }
-}
+<?php
+include("footer.php");
 ?>
